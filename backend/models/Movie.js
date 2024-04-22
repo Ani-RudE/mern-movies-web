@@ -19,6 +19,7 @@ const movieSchema = new mongoose.Schema(
      {
           name: { type: String, required: true },
           image: { type: String },
+          video: { type: String, required: true, default: "https://youtu.be/nu_pCVPKzTk?si=uCUPTaA_bFlSfP71"},
           year: { type: Number, required: true },
           genre: { type: ObjectId, ref: "Genre", required: true },
           detail: { type: String, required: true },

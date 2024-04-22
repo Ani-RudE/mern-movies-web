@@ -3,16 +3,16 @@ const router = express.Router();
 
 // Controllers
 import {
-  createMovie,
-  getAllMovies,
-  getSpecificMovie,
-  updateMovie,
-  movieReview,
-  deleteMovie,
-  deleteComment,
-  getNewMovies,
-  getTopMovies,
-  getRandomMovies,
+     createMovie,
+     getAllMovies,
+     getSpecificMovie,
+     updateMovie,
+     movieReview,
+     deleteMovie,
+     deleteComment,
+     getNewMovies,
+     getTopMovies,
+     getRandomMovies,
 } from "../controllers/movieController.js";
 // Middlewares
 import { authenticate, authorizeAdmin } from "../middlewares/authMiddleware.js";
