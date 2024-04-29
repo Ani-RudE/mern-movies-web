@@ -30,6 +30,7 @@ const Main = () => {
                                    content={visitors?.length}
                                    info="20.2k more then usual"
                                    gradient="bg-green-500"
+                                   className="text-center"
                               />
                               <SecondaryCard
                                    pill="Comments"

@@ -7,8 +7,11 @@ const VideoModal = ({ videoUrl, onClose }) => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
                <div className="bg-gray-800 p-4">
                     <iframe
-                         width="560"
-                         height="315"
+                         width="1120"
+                         height="630
+                         "
+                         // width="560"
+                         // height="315"
                          src={videoUrl}
                          // "https://www.youtube.com/embed/S9yO7rntATs?si=YmHS5gNTmGXXHHN3"
                          title="YouTube video player"
