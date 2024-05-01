@@ -234,4 +234,5 @@ const CreateMovie = () => {
           </div>
      );
 };
+
 export default CreateMovie;
