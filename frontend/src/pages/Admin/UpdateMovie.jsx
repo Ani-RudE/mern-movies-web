@@ -3,7 +3,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import {
      useGetSpecificMovieQuery,
      useUpdateMovieMutation,
-     useUploadImageMutation,
      useDeleteMovieMutation,
 } from "../../redux/api/movies";
 import { toast } from "react-toastify";
@@ -18,26 +17,27 @@ const UpdateMovie = () => {
           detail: "",
           cast: [],
           ratings: 0,
-          image: null,
+          image: "",
+          video: "",
      });
 
-     const [selectedImage, setSelectedImage] = useState(null);
-     const { data: initialMovieData } = useGetSpecificMovieQuery(id);
+     const { data: initialMovieData, isLoading: isLoadingMovie } = useGetSpecificMovieQuery(id);
 
      useEffect(() => {
           if (initialMovieData) {
-               setMovieData(initialMovieData);
+               setMovieData({
+                    name: initialMovieData.name,
+                    year: initialMovieData.year,
+                    detail: initialMovieData.detail,
+                    cast: initialMovieData.cast,
+                    ratings: initialMovieData.ratings,
+                    image: initialMovieData.image,
+                    video: initialMovieData.video || "",
+               });
           }
      }, [initialMovieData]);
 
-     const [updateMovie, { isLoading: isUpdatingMovie }] =
-          useUpdateMovieMutation();
-
-     const [
-          uploadImage,
-          { isLoading: isUploadingImage, error: uploadImageErrorDetails },
-     ] = useUploadImageMutation();
-
+     const [updateMovie, { isLoading: isUpdatingMovie }] = useUpdateMovieMutation();
      const [deleteMovie] = useDeleteMovieMutation();
 
      const handleChange = (e) => {
@@ -48,59 +48,27 @@ const UpdateMovie = () => {
           }));
      };
 
-     const handleImageChange = (e) => {
-          const file = e.target.files[0];
-          setSelectedImage(file);
-     };
-
      const handleUpdateMovie = async () => {
+          if (!movieData.name || !movieData.year || !movieData.detail || !movieData.cast || !movieData.image || !movieData.video) {
+               toast.error("Please fill in all required fields");
+               return;
+          }
+
           try {
-               if (
-                    !movieData.name ||
-                    !movieData.year ||
-                    !movieData.detail ||
-                    !movieData.cast
-               ) {
-                    toast.error("Please fill in all required fields");
-                    return;
-               }
-
-               let uploadedImagePath = movieData.image;
-
-               if (selectedImage) {
-                    const formData = new FormData();
-                    formData.append("image", selectedImage);
-
-                    const uploadImageResponse = await uploadImage(formData);
-
-                    if (uploadImageResponse.data) {
-                         uploadedImagePath = uploadImageResponse.data.image;
-                    } else {
-                         console.error("Failed to upload image:", uploadImageErrorDetails);
-                         toast.error("Failed to upload image");
-                         return;
-                    }
-               }
-
-               await updateMovie({
-                    id: id,
-                    updatedMovie: {
-                         ...movieData,
-                         image: uploadedImagePath,
-                    },
-               });
-
+               await updateMovie({ id, updatedMovie: movieData });
                navigate("/movies");
+               toast.success("Movie updated successfully");
           } catch (error) {
                console.error("Failed to update movie:", error);
+               toast.error(`Failed to update movie: ${error?.message}`);
           }
      };
 
      const handleDeleteMovie = async () => {
           try {
-               toast.success("Movie deleted successfully");
                await deleteMovie(id);
                navigate("/movies");
+               toast.success("Movie deleted successfully");
           } catch (error) {
                console.error("Failed to delete movie:", error);
                toast.error(`Failed to delete movie: ${error?.message}`);
@@ -111,7 +79,6 @@ const UpdateMovie = () => {
           <div className="container flex justify-center items-center mt-4">
                <form>
                     <p className="text-green-200 w-[50rem] text-2xl mb-4">Update Movie</p>
-
                     <div className="mb-4">
                          <label className="block">
                               Name:
@@ -161,52 +128,50 @@ const UpdateMovie = () => {
                               />
                          </label>
                     </div>
-
                     <div className="mb-4">
-                         <label
-                              style={
-                                   !selectedImage
-                                        ? {
-                                             border: "1px solid #888",
-                                             borderRadius: "5px",
-                                             padding: "8px",
-                                        }
-                                        : {
-                                             border: "0",
-                                             borderRadius: "0",
-                                             padding: "0",
-                                        }
-                              }
-                         >
-                              {!selectedImage && "Upload Image"}
+                         <label className="block">
+                              Image URL:
                               <input
-                                   type="file"
-                                   accept="image/*"
-                                   onChange={handleImageChange}
-                                   style={{ display: !selectedImage ? "none" : "block" }}
+                                   type="text"
+                                   name="image"
+                                   value={movieData.image}
+                                   onChange={handleChange}
+                                   className="border px-2 py-1 w-full"
                               />
                          </label>
                     </div>
-
+                    <div className="mb-4">
+                         <label className="block">
+                              Video URL:
+                              <input
+                                   type="text"
+                                   name="video"
+                                   value={movieData.video}
+                                   onChange={handleChange}
+                                   className="border px-2 py-1 w-full"
+                              />
+                         </label>
+                    </div>
                     <button
                          type="button"
                          onClick={handleUpdateMovie}
                          className="bg-teal-500 text-white px-4 py-2 rounded"
-                         disabled={isUpdatingMovie || isUploadingImage}
+                         disabled={isUpdatingMovie}
                     >
-                         {isUpdatingMovie || isUploadingImage ? "Updating..." : "Update Movie"}
+                         {isUpdatingMovie ? "Updating..." : "Update Movie"}
                     </button>
 
                     <button
                          type="button"
                          onClick={handleDeleteMovie}
                          className="bg-red-500 text-white px-4 py-2 rounded ml-2"
-                         disabled={isUpdatingMovie || isUploadingImage}
+                         disabled={isUpdatingMovie}
                     >
-                         {isUpdatingMovie || isUploadingImage ? "Deleting..." : "Delete Movie"}
+                         {isUpdatingMovie ? "Deleting..." : "Delete Movie"}
                     </button>
                </form>
           </div>
      );
 };
+
 export default UpdateMovie;
