@@ -30,7 +30,7 @@ In order to install and run this project on your local machine, follow the steps
 `cd ..`
 
 5. Run the following command to initialize the project on local-host:<br>
-`npm run fullstack`
+`npm run fullstack`<br>
 This script concurrently runs the "front-end" and "back-end" code.
 
 6. If the above command does not work, then split the terminal and run the following two commands simultaneously:<br>
